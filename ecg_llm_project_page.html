@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ECG is All You Need — Cross-Modal Cardiac Inference with LLMs — Mohammed Bilal</title>
+<meta name="description" content="A feasibility study showing large language models can infer echocardiographic findings from a 12-lead ECG image alone, zero-shot, without fine-tuning. Retrospective comparison of three LLMs against the cardiologist gold standard on 311 paired cases.">
+<style>
+  :root{
+    --ink:#0B1220; --indigo:#2D4DE0; --blue:#2D7FF0; --cyan:#1FC8DA; --signal:#FF7A4D;
+    --slate:#5b6678; --line:#E2E7F0; --bg:#FBFCFE;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+    --serif:Georgia,Cambria,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:#1B2230;font-family:var(--serif);line-height:1.65;font-size:17px}
+  a{color:var(--indigo);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:860px;margin:0 auto;padding:0 22px}
+  nav{position:sticky;top:0;z-index:50;background:rgba(251,252,254,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav .row{max-width:860px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;gap:16px}
+  nav .brand{display:flex;align-items:center;gap:9px;font-family:var(--sans);font-weight:700;color:var(--ink);font-size:15px}
+  nav .links{margin-left:auto;display:flex;gap:18px;align-items:center;font-family:var(--sans);font-size:13.5px}
+  nav .links a.sec{color:var(--slate)}
+  nav .btn{font-family:var(--sans);font-size:13px;font-weight:600;padding:7px 13px;border-radius:8px;border:1px solid var(--indigo);color:var(--indigo)}
+  nav .btn.solid{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+  nav .btn:hover{text-decoration:none;opacity:.9}
+  @media(max-width:680px){nav .links a.sec{display:none}}
+  header.hero{background:linear-gradient(160deg,#0B1220 0%,#15214a 100%);color:#fff;padding:54px 0 46px}
+  header.hero .eyebrow{font-family:var(--sans);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);font-weight:700;margin-bottom:14px}
+  header.hero h1{font-family:var(--sans);font-weight:700;font-size:32px;line-height:1.18;letter-spacing:-.5px;margin:0 0 10px;color:#fff}
+  header.hero .tag{font-size:18px;color:#C7D0E0;font-style:italic;margin-bottom:22px}
+  header.hero .authors{font-family:var(--sans);font-size:14px;color:#AEB8CC;line-height:1.7}
+  header.hero .authors b{color:#fff}
+  header.hero .meta{font-family:var(--sans);font-size:13px;color:#8A94A6;margin-top:8px}
+  .stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px}
+  .stats .s b{display:block;font-size:26px;color:#fff;font-weight:800;line-height:1;font-family:var(--sans)}
+  .stats .s span{font-size:12px;color:#9fb0cc;letter-spacing:.04em;font-family:var(--sans)}
+  main{padding:10px 0 40px}
+  section{padding:26px 0;border-bottom:1px solid var(--line)}
+  h2{font-family:var(--sans);font-size:23px;color:var(--ink);margin:6px 0 12px;font-weight:700;letter-spacing:-.3px}
+  h3{font-family:var(--sans);font-size:16.5px;color:#13306E;margin:20px 0 6px;font-weight:700}
+  p{margin:0 0 13px} .lead{font-size:18.5px} strong{color:#10204A}
+  table{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:13.5px;margin:14px 0}
+  caption{caption-side:top;text-align:left;font-family:var(--sans);font-size:12.5px;color:var(--slate);font-style:italic;margin-bottom:7px}
+  th{background:#10204A;color:#fff;text-align:left;padding:8px 11px;font-weight:600;font-size:12.5px}
+  td{border-bottom:1px solid var(--line);padding:8px 11px;vertical-align:top}
+  tr:nth-child(even) td{background:#F5F8FC}
+  .val{font-variant-numeric:tabular-nums;white-space:nowrap}
+  figure{margin:20px 0;text-align:center} figure svg{max-width:100%;height:auto}
+  figcaption{font-family:var(--sans);font-size:12.5px;color:var(--slate);margin-top:9px;text-align:left;line-height:1.55}
+  figcaption b{color:#10204A}
+  .honest{background:#FFF8F4;border-left:3px solid var(--signal);border-radius:0 8px 8px 0;padding:13px 16px;margin:16px 0;font-size:15.5px}
+  .role{background:#F2F5FD;border:1px solid #DCE3F6;border-left:3px solid var(--indigo);border-radius:0 10px 10px 0;padding:16px 18px;margin:6px 0}
+  .role h2{margin-top:0}
+  ul{padding-left:20px;margin:0 0 13px} li{margin-bottom:6px}
+  ol.refs{font-family:var(--sans);font-size:13px;color:#33404f;padding-left:22px} ol.refs li{margin-bottom:7px}
+  footer{padding:30px 0 50px;font-family:var(--sans);font-size:13px;color:var(--slate)}
+  footer .disc{font-style:italic;margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="row">
+    <span class="brand">
+      <svg width="30" height="20" viewBox="0 0 256 150" aria-hidden="true">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3A4DE0"/><stop offset=".55" stop-color="#2D7FF0"/><stop offset="1" stop-color="#1FC8DA"/></linearGradient></defs>
+        <path d="M16 84 H86 L98 98 L112 28 L126 116 L138 84 H156 C166 84 170 56 184 56 C198 56 202 84 212 84 H240" fill="none" stroke="url(#lg)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="112" cy="28" r="11" fill="#FF7A4D"/>
+      </svg>
+      M. Bilal
+    </span>
+    <div class="links">
+      <a class="sec" href="#abstract">Abstract</a>
+      <a class="sec" href="#methods">Methods</a>
+      <a class="sec" href="#results">Results</a>
+      <a class="btn solid" href="index.html">← Portfolio</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Large language models · Cardiology · Feasibility study</div>
+    <h1>ECG is All You Need — Cross-Modal Cardiac Inference with Large Language Models</h1>
+    <div class="tag">Can a general-purpose LLM infer what an echocardiogram would show, from a photo of a 12-lead ECG alone?</div>
+    <div class="authors">
+      Azhar Tadas Wahab, Anirudh Gangadharan, <b>Mohammed Bilal</b>, Sahil Agarwala, Anam Fathima, Madiha Fathima
+      <div class="meta">Department of Cardiology &amp; Medical AI Research · 2025 · Doctors AI Global Summit (Scientific Abstract Compendium)</div>
+    </div>
+    <div class="stats">
+      <div class="s"><b>311</b><span>PAIRED CASES</span></div>
+      <div class="s"><b>0.394</b><span>BEST r (EF)</span></div>
+      <div class="s"><b>64%</b><span>WITHIN ±5% EF</span></div>
+      <div class="s"><b>Zero-shot</b><span>NO FINE-TUNING</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="abstract">
+    <h2>Abstract</h2>
+    <p class="lead">An ECG measures the heart's electrical activity; an echocardiogram measures its structure and function. They are conventionally treated as separate worlds. This study asked a provocative question: can a modern large language model, given only an image of a 12-lead ECG, generate a plausible echocardiographic assessment — performing <em>cross-modal</em> inference with no training of its own?</p>
+    <p>In a retrospective comparison of 311 paired ECG–echocardiogram cases, three leading LLMs were prompted to produce complete echo reports from ECG images alone, zero-shot. Outputs were compared against cardiologist-authored reports across ejection fraction, diastolic dysfunction, valve regurgitation and wall-motion. The best model reached a Pearson correlation of 0.394 (p &lt; 0.001) for ejection fraction, with roughly two-thirds of estimates within ±5% of the true value. Performance is not yet sufficient to replace echocardiography, but it establishes a first proof-of-concept that LLMs can extract latent structural signal from ECG waveforms — enough to be useful for triage where echo is unavailable.</p>
+  </section>
+
+  <section>
+    <div class="role">
+      <h2>My contribution</h2>
+      <p>I contributed to this study as part of the research team — <span style="color:#B5431E">[edit to your specific role: e.g., dataset preparation, prompt design, statistical analysis]</span>. The author list above is shown in the order recorded for the conference submission.</p>
+    </div>
+  </section>
+
+  <section id="background">
+    <h2>Background &amp; objective</h2>
+    <p>More than two billion people lack reliable access to echocardiography, while a 12-lead ECG costs under a few dollars and exists in almost every clinic. If structural cardiac information is even partly recoverable from the ECG, it could power triage in places where ultrasound and sonographers simply are not available.</p>
+    <p>Prior deep-learning work established that a purpose-trained network can infer reduced ejection fraction from the digital ECG signal.<a href="#r1">¹</a> This study tests a different and more accessible premise: that a general-purpose, off-the-shelf LLM — with no fine-tuning and no signal access, just the ECG <em>image</em> — can already perform meaningful cross-modal inference through prompting alone.</p>
+  </section>
+
+  <section id="methods">
+    <h2>Methods</h2>
+    <p>We assembled 311 consecutive paired ECG–echocardiogram cases from a single cardiac centre. Each 12-lead ECG image was given to three leading LLMs — Claude Opus 4, Grok 4 and GPT-4o — with a structured prompt asking for a complete echocardiographic report, in a zero-shot setting (no fine-tuning, no example reports, no signal data). Each model's output was then scored against the cardiologist-authored echo report.</p>
+
+    <figure>
+      <svg viewBox="0 0 860 150" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,sans-serif">
+        <defs><marker id="ar" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9AA6BC"/></marker></defs>
+        <rect x="6" y="50" width="120" height="52" rx="8" fill="#fff" stroke="#C7CFDD"/>
+        <text x="66" y="72" text-anchor="middle" font-size="11.5" fill="#13306E" font-weight="700">12-lead ECG</text>
+        <text x="66" y="88" text-anchor="middle" font-size="9.5" fill="#5b6678">image</text>
+        <line x1="126" y1="76" x2="156" y2="76" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="158" y="46" width="150" height="60" rx="8" fill="url(#lgb)"/>
+        <defs><linearGradient id="lgb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3A4DE0"/><stop offset="1" stop-color="#2D7FF0"/></linearGradient></defs>
+        <text x="233" y="70" text-anchor="middle" font-size="11.5" fill="#fff" font-weight="700">LLM (zero-shot)</text>
+        <text x="233" y="87" text-anchor="middle" font-size="9.3" fill="#dbe6ff">Claude · Grok · GPT-4o</text>
+        <line x1="308" y1="76" x2="338" y2="76" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="340" y="46" width="140" height="60" rx="8" fill="#EEF2FB" stroke="#C7CFDD"/>
+        <text x="410" y="70" text-anchor="middle" font-size="11.5" fill="#13306E" font-weight="700">Synthetic echo</text>
+        <text x="410" y="87" text-anchor="middle" font-size="9.3" fill="#5b6678">report (EF, RWMA…)</text>
+        <line x1="480" y1="76" x2="510" y2="76" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="512" y="46" width="150" height="60" rx="8" fill="#fff" stroke="#1FA9BF"/>
+        <text x="587" y="70" text-anchor="middle" font-size="11.5" fill="#1593a8" font-weight="700">Statistical</text>
+        <text x="587" y="87" text-anchor="middle" font-size="9.3" fill="#5b6678">comparison</text>
+        <line x1="662" y1="76" x2="692" y2="76" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="694" y="46" width="160" height="60" rx="8" fill="#fff" stroke="#FF7A4D"/>
+        <text x="774" y="70" text-anchor="middle" font-size="11.5" fill="#B5431E" font-weight="700">Cardiologist</text>
+        <text x="774" y="87" text-anchor="middle" font-size="9.3" fill="#5b6678">gold standard</text>
+      </svg>
+      <figcaption><b>Figure 1.</b> Study design. Each ECG image is converted by an LLM, zero-shot, into a synthetic echocardiographic report, which is then statistically compared against the cardiologist's report.</figcaption>
+    </figure>
+
+    <p>Agreement was assessed with Pearson correlation and intraclass correlation for ejection fraction, Bland–Altman analysis for systematic bias, weighted Cohen's κ for ordinal grades (diastolic dysfunction, regurgitation severity), and a Friedman test with post-hoc comparisons to rank the three models.</p>
+  </section>
+
+  <section id="results">
+    <h2>Results</h2>
+    <p>Claude Opus 4 showed the strongest concordance with cardiologists across the primary metrics, significantly ahead of the other two models (Friedman χ² = 36.3, p &lt; 0.001).</p>
+    <table>
+      <caption>Table 1. Best-model (Claude Opus 4) agreement with the cardiologist gold standard.</caption>
+      <tr><th>Metric</th><th class="val">Value</th></tr>
+      <tr><td>Ejection fraction — Pearson r</td><td class="val">0.394 (p &lt; 0.001)</td></tr>
+      <tr><td>Ejection fraction — ICC</td><td class="val">0.368</td></tr>
+      <tr><td>EF estimates within ±5%</td><td class="val">63.6%</td></tr>
+      <tr><td>EF mean absolute error (best)</td><td class="val">6.4%</td></tr>
+      <tr><td>Diastolic dysfunction — weighted κ</td><td class="val">0.324</td></tr>
+    </table>
+    <p>Bland–Altman analysis for the best model showed a mean bias of just +0.3% for EF, indicating little systematic over- or under-estimation. For wall-motion abnormalities, all three models were <em>conservative</em> — high specificity (82.8–91.9%) but limited sensitivity (16.7–46.1%) — i.e. they avoided false alarms at the cost of missing cases. A striking secondary finding: the LLMs were more <em>complete</em> than the human reports, documenting ejection fraction in 99% of cases versus 87.5% for cardiologists.</p>
+    <div class="honest">Current performance is not sufficient to replace echocardiography. The value is as a triage signal, not a diagnosis.</div>
+  </section>
+
+  <section id="implications">
+    <h2>Clinical implications &amp; key innovation</h2>
+    <p>The realistic use case is referral triage. In a setting with no echo, an LLM-generated preliminary assessment from a cheap ECG could help a health worker decide who to send onward — catching a meaningful share of significant disease at high specificity, at the cost of an ECG (a couple of dollars) rather than an echo plus transport (often 50× more).</p>
+    <p><strong>The key innovation</strong> is the demonstration itself: that a general LLM can perform cross-modal cardiac inference — generating echo-style assessments from ECG waveforms alone, with no fine-tuning, training data, or imaging input — which implies the ECG image encodes exploitable latent structural information accessible to multimodal models.</p>
+  </section>
+
+  <section id="future">
+    <h2>Limitations &amp; future work</h2>
+    <ul>
+      <li>Single-centre, retrospective design; external multi-centre validation across diverse pathologies is the priority.</li>
+      <li>Wall-motion sensitivity is low — the clearest target for improvement, e.g. via fine-tuning on annotated ECG–echo pairs.</li>
+      <li>Zero-shot LLM outputs vary with prompt and model version and are not calibrated.</li>
+      <li>Next directions: multimodal inputs (clinical history + ECG), LLM ensembles, uncertainty/confidence scoring, feature-level explainability, and a prospective trial measuring time-to-referral and patient outcomes.</li>
+    </ul>
+  </section>
+
+  <section id="references">
+    <h2>References</h2>
+    <ol class="refs">
+      <li id="r1">Attia ZI, Kapa S, Lopez-Jimenez F, et al. Screening for cardiac contractile dysfunction using an artificial intelligence–enabled electrocardiogram. <em>Nat Med.</em> 2019;25(1):70–74.</li>
+      <li id="r2">Yusuf S, Hawken S, Ôunpuu S, et al. Effect of potentially modifiable risk factors associated with myocardial infarction in 52 countries (INTERHEART). <em>Lancet.</em> 2004;364:937–952.</li>
+      <li id="r3">Models evaluated: Anthropic Claude Opus 4, xAI Grok 4, OpenAI GPT-4o (2025 releases), accessed via their respective APIs in a zero-shot configuration.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <div class="disc">Research feasibility study. LLM-generated assessments are decision-support signals only — not a diagnosis, and not a replacement for echocardiography.</div>
+    © 2025 Wahab, Gangadharan, Bilal et al. ·
+    <a href="index.html">← Back to portfolio</a>
+  </footer>
+
+</main>
+</body>
+</html>

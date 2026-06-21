@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Driven Clinical–Lifestyle Network Model for Early CVD Prediction — Mohammed Bilal</title>
+<meta name="description" content="A hybrid Graph Attention Network and soft-voting ensemble for early cardiovascular-disease risk prediction from questionnaire-only data, with SHAP and attention-based interpretability. RV College of Engineering. Manuscript submitted to IEEE Access.">
+<style>
+  :root{
+    --ink:#0B1220; --indigo:#2D4DE0; --blue:#2D7FF0; --cyan:#1FC8DA; --signal:#FF7A4D;
+    --slate:#5b6678; --line:#E2E7F0; --bg:#FBFCFE;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+    --serif:Georgia,Cambria,"Times New Roman",serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:#1B2230;font-family:var(--serif);line-height:1.65;font-size:17px}
+  a{color:var(--indigo);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:860px;margin:0 auto;padding:0 22px}
+
+  nav{position:sticky;top:0;z-index:50;background:rgba(251,252,254,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  nav .row{max-width:860px;margin:0 auto;padding:11px 22px;display:flex;align-items:center;gap:16px}
+  nav .brand{display:flex;align-items:center;gap:9px;font-family:var(--sans);font-weight:700;color:var(--ink);font-size:15px}
+  nav .links{margin-left:auto;display:flex;gap:18px;align-items:center;font-family:var(--sans);font-size:13.5px}
+  nav .links a.sec{color:var(--slate)}
+  nav .btn{font-family:var(--sans);font-size:13px;font-weight:600;padding:7px 13px;border-radius:8px;border:1px solid var(--indigo);color:var(--indigo)}
+  nav .btn.solid{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+  nav .btn:hover{text-decoration:none;opacity:.9}
+  @media(max-width:680px){nav .links a.sec{display:none}}
+
+  header.hero{background:linear-gradient(160deg,#0B1220 0%,#15214a 100%);color:#fff;padding:54px 0 46px}
+  header.hero .eyebrow{font-family:var(--sans);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--cyan);font-weight:700;margin-bottom:14px}
+  header.hero h1{font-family:var(--sans);font-weight:700;font-size:31px;line-height:1.18;letter-spacing:-.5px;margin:0 0 10px;color:#fff}
+  header.hero .tag{font-size:18px;color:#C7D0E0;font-style:italic;margin-bottom:22px}
+  header.hero .authors{font-family:var(--sans);font-size:14px;color:#AEB8CC;line-height:1.7}
+  header.hero .authors b{color:#fff}
+  header.hero .meta{font-family:var(--sans);font-size:13px;color:#8A94A6;margin-top:8px}
+  header.hero .cta{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
+  header.hero .cta a{font-family:var(--sans);font-weight:600;font-size:14px;padding:10px 18px;border-radius:9px}
+  header.hero .cta .p{background:linear-gradient(90deg,var(--indigo),var(--cyan));color:#fff}
+  header.hero .cta .s{border:1px solid #3a4660;color:#dbe2ef}
+  header.hero .cta a:hover{text-decoration:none;opacity:.92}
+
+  main{padding:10px 0 40px}
+  section{padding:26px 0;border-bottom:1px solid var(--line)}
+  h2{font-family:var(--sans);font-size:23px;color:var(--ink);margin:6px 0 12px;font-weight:700;letter-spacing:-.3px}
+  h3{font-family:var(--sans);font-size:16.5px;color:#13306E;margin:20px 0 6px;font-weight:700}
+  p{margin:0 0 13px}
+  .lead{font-size:18.5px}
+  strong{color:#10204A}
+
+  table{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:13.5px;margin:14px 0}
+  caption{caption-side:top;text-align:left;font-family:var(--sans);font-size:12.5px;color:var(--slate);font-style:italic;margin-bottom:7px}
+  th{background:#10204A;color:#fff;text-align:left;padding:8px 11px;font-weight:600;font-size:12.5px}
+  td{border-bottom:1px solid var(--line);padding:8px 11px;vertical-align:top}
+  tr:nth-child(even) td{background:#F5F8FC}
+  .val{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+  figure{margin:20px 0;text-align:center}
+  figure img{max-width:100%;border:1px solid var(--line);border-radius:10px;background:#fff}
+  figure svg{max-width:100%;height:auto}
+  figcaption{font-family:var(--sans);font-size:12.5px;color:var(--slate);margin-top:9px;text-align:left;line-height:1.55}
+  figcaption b{color:#10204A}
+
+  .honest{background:#FFF8F4;border-left:3px solid var(--signal);border-radius:0 8px 8px 0;padding:13px 16px;margin:16px 0;font-size:15.5px}
+  .role{background:#F2F5FD;border:1px solid #DCE3F6;border-left:3px solid var(--indigo);border-radius:0 10px 10px 0;padding:16px 18px;margin:6px 0}
+  .role h2{margin-top:0}
+  ul{padding-left:20px;margin:0 0 13px}
+  li{margin-bottom:6px}
+  ol.refs{font-family:var(--sans);font-size:13px;color:#33404f;padding-left:22px}
+  ol.refs li{margin-bottom:7px}
+
+  .stats{display:flex;gap:26px;flex-wrap:wrap;margin-top:22px}
+  .stats .s{font-family:var(--sans)}
+  .stats .s b{display:block;font-size:26px;color:#fff;font-weight:800;line-height:1}
+  .stats .s span{font-size:12px;color:#9fb0cc;letter-spacing:.04em}
+
+  footer{padding:30px 0 50px;font-family:var(--sans);font-size:13px;color:var(--slate)}
+  footer .disc{font-style:italic;margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="row">
+    <span class="brand">
+      <svg width="30" height="20" viewBox="0 0 256 150" aria-hidden="true">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3A4DE0"/><stop offset=".55" stop-color="#2D7FF0"/><stop offset="1" stop-color="#1FC8DA"/></linearGradient></defs>
+        <path d="M16 84 H86 L98 98 L112 28 L126 116 L138 84 H156 C166 84 170 56 184 56 C198 56 202 84 212 84 H240" fill="none" stroke="url(#lg)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="112" cy="28" r="11" fill="#FF7A4D"/>
+      </svg>
+      M. Bilal
+    </span>
+    <div class="links">
+      <a class="sec" href="#abstract">Abstract</a>
+      <a class="sec" href="#methods">Methods</a>
+      <a class="sec" href="#results">Results</a>
+      <a class="btn" href="https://github.com/mohdbilal10" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn solid" href="https://mohdbilal10.github.io/" target="_blank" rel="noopener">Portfolio</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">Graph machine learning · Cardiovascular screening</div>
+    <h1>AI-Driven Clinical–Lifestyle Network Model for Early Prediction of Cardiovascular Diseases</h1>
+    <div class="tag">A hybrid graph-attention and ensemble model that screens for cardiovascular risk from a questionnaire alone — no labs, no imaging.</div>
+    <div class="authors">
+      <b>Mohammed Bilal M</b>, Sanju H K, Vignesh Kumar Kaipa, Vijay R · Guide: Dr. A H Manjunatha Reddy
+      <div class="meta">Department of Biotechnology, RV College of Engineering, Bengaluru · Major Project · 2025–26 · Manuscript submitted to IEEE Access</div>
+    </div>
+    <div class="stats">
+      <div class="s"><b>0.735</b><span>CROSS-VAL AUROC</span></div>
+      <div class="s"><b>91.8%</b><span>SENSITIVITY</span></div>
+      <div class="s"><b>2 lenses</b><span>SHAP + ATTENTION</span></div>
+      <div class="s"><b>Questionnaire</b><span>NO LABS / IMAGING</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="abstract">
+    <h2>Abstract</h2>
+    <p class="lead">Cardiovascular disease is the leading cause of death worldwide, yet systematic risk screening is scarce in primary care — and the classic risk calculators are linear, additive, and poorly calibrated for South Asian populations. We developed a hybrid framework that screens for cardiovascular risk using <em>questionnaire-derived data only</em>, with no laboratory tests or imaging.</p>
+    <p>The model combines a <strong>Graph Attention Network (GAT)</strong> — which represents patients and risk factors as a relational graph and learns non-linear, multi-order risk-factor interactions — with a <strong>calibrated soft-voting ensemble</strong> of XGBoost, LightGBM and Logistic Regression that fuses the learned graph embeddings with engineered tabular features. Trained and validated on real patient questionnaire data from a cardiovascular institute, the model achieved a cross-validated AUROC of 0.735 ± 0.028 and 91.8% sensitivity at a clinical screening threshold. Predictions are made interpretable through two complementary lenses — SHAP feature attribution and GAT attention weights. The manuscript is under review at IEEE Access.</p>
+  </section>
+
+  <section>
+    <div class="role">
+      <h2>My role on this project</h2>
+      <p>I am the first author and lead developer. I designed and built the pipeline end to end:</p>
+      <ul>
+        <li><strong>Feature engineering &amp; graph construction.</strong> Turned raw questionnaire responses into binary risk flags and interaction terms, and built the bipartite patient–risk-factor graph.</li>
+        <li><strong>Modelling.</strong> Implemented and trained the Graph Attention Network and the calibrated soft-voting ensemble that fuses graph embeddings with tabular features.</li>
+        <li><strong>Evaluation &amp; interpretability.</strong> Ran the stratified cross-validation and held-out testing, and produced the SHAP and attention-based explanations.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="background">
+    <h2>Background &amp; objective</h2>
+    <p>Cardiovascular diseases account for roughly a third of all deaths globally,<a href="#r1">¹</a> and the INTERHEART study showed that nine modifiable risk factors explain over 90% of heart-attack risk.<a href="#r2">²</a> Yet routine screening is uncommon in Indian primary care, so many high-risk individuals are identified only after an acute event.</p>
+    <p>Traditional risk scores (Framingham, ASCVD, QRISK3)<a href="#r3">³</a><a href="#r4">⁴</a> are linear and additive — they cannot capture the non-linear, high-order interactions between clinical and lifestyle factors, and most machine-learning alternatives treat the data as flat tables, ignoring the relational structure <em>among</em> risk factors. The most accurate models are often opaque, which limits clinical trust.</p>
+    <p><strong>Objective.</strong> Build an accurate, interpretable cardiovascular-risk screen that (a) uses only questionnaire data so it can run anywhere, (b) models risk factors relationally rather than as independent columns, and (c) explains every prediction for clinician trust.</p>
+  </section>
+
+  <section id="data">
+    <h2>Data &amp; features</h2>
+    <p>The model was developed on real patient questionnaire data collected at the Jayadeva Institute of Cardiovascular Sciences, Bengaluru — entirely self-reported clinical and lifestyle items, with no laboratory or imaging inputs. From the raw responses we engineered <strong>13 binary risk flags</strong> (e.g., hypertension, diabetes, smoking, family history, physical inactivity) plus <strong>interaction terms</strong> that expose combinations known to compound risk. Class imbalance — most respondents are lower-risk — was addressed with Borderline-SMOTE<a href="#r8">⁸</a> so the model is not biased toward the majority class. Evaluation used 5-fold stratified cross-validation with a held-out test set.</p>
+    <div class="honest">A note on cohort size: the verified sample count is being finalised against the manuscript and is intentionally omitted here until it is confirmed. The methodology and results below stand independently of that figure.</div>
+  </section>
+
+  <section id="methods">
+    <h2>Methods</h2>
+    <p>The pipeline has two parallel tracks that are then fused: a <em>relational</em> track (the graph network) and a <em>tabular</em> track (engineered features), combined by a calibrated ensemble.</p>
+
+    <figure>
+      <svg viewBox="0 0 860 280" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,sans-serif">
+        <defs>
+          <linearGradient id="gat" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3A4DE0"/><stop offset="1" stop-color="#2D7FF0"/></linearGradient>
+          <marker id="ar" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9AA6BC"/></marker>
+        </defs>
+        <!-- questionnaire -->
+        <rect x="8" y="112" width="104" height="56" rx="8" fill="#fff" stroke="#C7CFDD"/>
+        <text x="60" y="136" text-anchor="middle" font-size="11.5" fill="#13306E" font-weight="700">Questionnaire</text>
+        <text x="60" y="152" text-anchor="middle" font-size="9.5" fill="#5b6678">self-reported</text>
+        <line x1="112" y1="140" x2="138" y2="140" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
+        <!-- feature engineering -->
+        <rect x="140" y="108" width="140" height="64" rx="8" fill="#EEF2FB" stroke="#C7CFDD"/>
+        <text x="210" y="132" text-anchor="middle" font-size="11.5" fill="#13306E" font-weight="700">Feature engineering</text>
+        <text x="210" y="149" text-anchor="middle" font-size="9.3" fill="#5b6678">13 risk flags +</text>
+        <text x="210" y="162" text-anchor="middle" font-size="9.3" fill="#5b6678">interaction terms</text>
+        <!-- branch up to graph -->
+        <line x1="280" y1="124" x2="320" y2="74" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="322" y="34" width="150" height="58" rx="8" fill="url(#gat)"/>
+        <text x="397" y="58" text-anchor="middle" font-size="11.5" fill="#fff" font-weight="700">Bipartite graph → GAT</text>
+        <text x="397" y="74" text-anchor="middle" font-size="9.3" fill="#dbe6ff">2-layer · 4-head attention</text>
+        <line x1="472" y1="63" x2="512" y2="63" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="514" y="34" width="120" height="58" rx="8" fill="#fff" stroke="#2D4DE0"/>
+        <text x="574" y="58" text-anchor="middle" font-size="11" fill="#2D4DE0" font-weight="700">Patient embeddings</text>
+        <text x="574" y="74" text-anchor="middle" font-size="9.3" fill="#5b6678">8-dimensional</text>
+        <!-- fusion -->
+        <line x1="574" y1="92" x2="574" y2="146" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
+        <line x1="280" y1="156" x2="512" y2="156" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="514" y="132" width="120" height="56" rx="8" fill="#EEF2FB" stroke="#C7CFDD"/>
+        <text x="574" y="156" text-anchor="middle" font-size="11.5" fill="#13306E" font-weight="700">Fusion</text>
+        <text x="574" y="172" text-anchor="middle" font-size="9.3" fill="#5b6678">45-feature vector</text>
+        <!-- ensemble -->
+        <line x1="634" y1="160" x2="664" y2="160" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
+        <rect x="666" y="124" width="186" height="72" rx="8" fill="#fff" stroke="#1FA9BF"/>
+        <text x="759" y="148" text-anchor="middle" font-size="11.5" fill="#1593a8" font-weight="700">Soft-voting ensemble</text>
+        <text x="759" y="165" text-anchor="middle" font-size="9.3" fill="#5b6678">XGBoost · LightGBM · LR</text>
+        <text x="759" y="182" text-anchor="middle" font-size="10" fill="#FF7A4D" font-weight="700">→ CVD risk score</text>
+        <!-- interpretability -->
+        <text x="574" y="232" text-anchor="middle" font-size="10.5" fill="#5b6678" font-style="italic">Every prediction explained via SHAP attribution + GAT attention weights</text>
+      </svg>
+      <figcaption><b>Figure 1.</b> The hybrid pipeline. Questionnaire responses become engineered features that feed two tracks — a bipartite patient–risk-factor graph encoded by a Graph Attention Network into patient embeddings, and the engineered tabular features — which are fused and passed to a calibrated soft-voting ensemble. SHAP and attention weights explain each prediction.</figcaption>
+    </figure>
+
+    <h3>The graph track — Graph Attention Network</h3>
+    <p>Patients and risk factors are represented as a <strong>bipartite graph</strong>: each patient node connects to the risk-factor nodes that apply to them. A two-layer GAT<a href="#r5">⁵</a> with 4-head attention learns, for each patient, an 8-dimensional embedding that captures non-linear, multi-order interactions between risk factors — for example, how smoking interacts with hypertension and family history together, rather than as three separate columns. The GAT is trained by self-supervised link prediction, so it learns structure without needing extra labels.</p>
+
+    <h3>The tabular track &amp; fusion</h3>
+    <p>In parallel, the engineered risk flags and interaction terms are retained as tabular features. The 8-dimensional graph embedding is concatenated with these into a single fused representation, giving the downstream model both the relational view (from the graph) and the explicit feature view (from the table).</p>
+
+    <h3>The ensemble</h3>
+    <p>A calibrated <strong>soft-voting ensemble</strong> combines three complementary learners on the fused features. Soft voting averages the predicted probabilities (weighted), which is more robust than any single model.</p>
+    <table>
+      <caption>Table 1. Ensemble members and voting weights (tuned on the validation set).</caption>
+      <tr><th>Model</th><th>Weight</th><th>Why it's included</th></tr>
+      <tr><td>XGBoost<a href="#r6">⁶</a></td><td class="val">0.45</td><td>Strong gradient-boosted trees; captures sharp non-linear splits.</td></tr>
+      <tr><td>LightGBM<a href="#r7">⁷</a></td><td class="val">0.45</td><td>Fast, leaf-wise boosting; complements XGBoost with different error modes.</td></tr>
+      <tr><td>Logistic Regression</td><td class="val">0.10</td><td>A calibrated linear anchor that stabilises probabilities at the extremes.</td></tr>
+    </table>
+    <p>The weights were tuned on the validation set, not taken from a paper — the two boosters carry most of the signal, with a light linear anchor for calibration.</p>
+
+    <h3>Evaluation</h3>
+    <p>Performance was measured with 5-fold stratified cross-validation plus a held-out test set, reporting AUROC, sensitivity, specificity and F1. The operating threshold was set low (0.17) to prioritise <strong>sensitivity</strong> — in screening, missing a high-risk patient is the costly error.</p>
+  </section>
+
+  <section id="results">
+    <h2>Results</h2>
+    <table>
+      <caption>Table 2. Headline performance.</caption>
+      <tr><th>Metric</th><th class="val">Value</th></tr>
+      <tr><td>Cross-validated AUROC</td><td class="val">0.735 ± 0.028</td></tr>
+      <tr><td>Held-out test AUROC</td><td class="val">0.709</td></tr>
+      <tr><td>Sensitivity at screening threshold (0.17)</td><td class="val">91.8%</td></tr>
+    </table>
+    <p>The model meaningfully outranks chance and, at the chosen operating point, catches the large majority of high-risk individuals — the behaviour a screening tool needs. The relational GAT track added signal over the tabular features alone, supporting the central hypothesis that risk-factor <em>interactions</em> carry information that flat models miss.</p>
+
+    <h3>Interpretability</h3>
+    <p>Two complementary explanations accompany every prediction: <strong>SHAP</strong><a href="#r9">⁹</a> attributes the risk score to individual features (how much each factor pushed the prediction up or down), while the <strong>GAT attention weights</strong> reveal which risk-factor relationships the graph leaned on. Together they let a clinician see <em>why</em> a patient was flagged, not just that they were.</p>
+    <figure>
+      <img src="fig_cvd_shap.png" alt="SHAP summary plot ranking the questionnaire risk factors by their contribution to predicted cardiovascular risk">
+      <figcaption><b>Figure 2.</b> SHAP feature-attribution summary — the questionnaire factors ranked by their contribution to predicted risk. <em>(Export your SHAP summary plot from the notebook and save it as <code>fig_cvd_shap.png</code> beside this page.)</em></figcaption>
+    </figure>
+  </section>
+
+  <section id="significance">
+    <h2>Why it matters</h2>
+    <p>Because it needs only a questionnaire, this screen can run on a phone, by a health worker, anywhere — no blood draw, no clinic equipment. It models risk relationally rather than additively, which fits how real risk compounds, and it stays interpretable, which is what earns clinical trust. The intended use is early triage: flag who should be prioritised for a clinical workup, well before an acute event.</p>
+  </section>
+
+  <section id="limitations">
+    <h2>Limitations &amp; next steps</h2>
+    <ul>
+      <li>Single-source, self-reported questionnaire data — external and prospective validation on independent cohorts is the key next step.</li>
+      <li>Self-report introduces recall and reporting bias that no model can fully correct.</li>
+      <li>Class imbalance was handled with Borderline-SMOTE; results should be confirmed on a naturally distributed external test set.</li>
+      <li>The screen estimates risk; it does not diagnose, and the clinician's judgement remains the decision-maker.</li>
+    </ul>
+    <p><strong>Next:</strong> external multi-site validation, prospective evaluation, probability calibration, and integration into a lightweight screening front-end.</p>
+  </section>
+
+  <section id="references">
+    <h2>References</h2>
+    <ol class="refs">
+      <li id="r1">World Health Organization. Cardiovascular diseases (CVDs) — fact sheet. 2021.</li>
+      <li id="r2">Yusuf S, Hawken S, Ôunpuu S, et al. Effect of potentially modifiable risk factors associated with myocardial infarction in 52 countries (the INTERHEART study). <em>Lancet.</em> 2004;364(9438):937–952.</li>
+      <li id="r3">D'Agostino RB, Vasan RS, Pencina MJ, et al. General cardiovascular risk profile for use in primary care: the Framingham Heart Study. <em>Circulation.</em> 2008;117(6):743–753.</li>
+      <li id="r4">Hippisley-Cox J, Coupland C, Brindle P. Development and validation of QRISK3 risk prediction algorithms. <em>BMJ.</em> 2017;357:j2099.</li>
+      <li id="r5">Veličković P, Cucurull G, Casanova A, et al. Graph Attention Networks. <em>Proc ICLR.</em> 2018.</li>
+      <li id="r6">Chen T, Guestrin C. XGBoost: A scalable tree boosting system. <em>Proc KDD.</em> 2016:785–794.</li>
+      <li id="r7">Ke G, Meng Q, Finley T, et al. LightGBM: A highly efficient gradient boosting decision tree. <em>Proc NeurIPS.</em> 2017.</li>
+      <li id="r8">Han H, Wang WY, Mao BH. Borderline-SMOTE: a new over-sampling method in imbalanced data sets learning. <em>Proc ICIC.</em> 2005:878–887.</li>
+      <li id="r9">Lundberg SM, Lee SI. A unified approach to interpreting model predictions (SHAP). <em>Proc NeurIPS.</em> 2017.</li>
+    </ol>
+  </section>
+
+  <footer>
+    <div class="disc">Academic project developed at the Department of Biotechnology, RV College of Engineering. A research screening model — decision-support only, not a diagnostic device.</div>
+    © 2026 Mohammed Bilal M et al. ·
+    <a href="mailto:mdbilalmk.a@gmail.com">mdbilalmk.a@gmail.com</a> ·
+    <a href="https://github.com/mohdbilal10" target="_blank" rel="noopener">GitHub</a> ·
+    <a href="https://mohdbilal10.github.io/" target="_blank" rel="noopener">Portfolio</a>
+  </footer>
+
+</main>
+</body>
+</html>

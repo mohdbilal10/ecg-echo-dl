@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohammed Bilal — AI/ML Engineer · Healthcare AI</title>
+<meta name="description" content="Mohammed Bilal — biotechnology graduate building deployable healthcare AI for resource-constrained settings. ECG-to-echo screening, LLM cross-modal cardiac inference, and graph-based cardiovascular risk prediction.">
+<style>
+  :root{
+    --ink:#090F1C; --panel:#111B30; --panel2:#0F1830; --indigo:#3A4DE0; --blue:#2D7FF0; --cyan:#1FC8DA; --signal:#FF7A4D;
+    --text:#E7ECF5; --muted:#94A1B8; --line:#223052;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--ink);color:var(--text);font-family:var(--sans);line-height:1.6;font-size:16px;
+    background-image:radial-gradient(900px 600px at 88% -8%, rgba(58,77,224,.26), transparent 60%),radial-gradient(760px 640px at -12% 108%, rgba(31,200,218,.16), transparent 55%);}
+  a{color:var(--cyan);text-decoration:none} a:hover{text-decoration:underline}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+
+  nav{position:sticky;top:0;z-index:40;backdrop-filter:blur(10px);background:rgba(9,15,28,.72);border-bottom:1px solid var(--line)}
+  nav .row{max-width:960px;margin:0 auto;padding:13px 24px;display:flex;align-items:center;gap:14px}
+  nav .brand{display:flex;align-items:center;gap:9px;font-weight:700;color:#fff;font-size:15px}
+  nav .nlinks{margin-left:auto;display:flex;gap:18px;font-size:13.5px;align-items:center}
+  nav .nlinks a{color:var(--muted)} nav .nlinks a:hover{color:#fff;text-decoration:none}
+  nav .nlinks .cta{color:#fff;border:1px solid var(--line);padding:7px 13px;border-radius:8px}
+  nav .nlinks .cta:hover{border-color:var(--cyan)}
+  @media(max-width:640px){nav .nlinks a.opt{display:none}}
+
+  header.hero{padding:70px 0 34px}
+  .hero .hi{font-family:var(--sans);font-size:14px;color:var(--cyan);font-weight:600;letter-spacing:.04em;margin-bottom:12px}
+  .hero h1{font-size:46px;line-height:1.05;letter-spacing:-1.2px;margin:0 0 10px;font-weight:800;
+    background:linear-gradient(92deg,#fff 28%,#a9ccff 66%,#56dcef);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .role{font-size:16px;color:#bcc8de;font-weight:600;margin-bottom:20px}
+  .hero p{font-size:18px;color:#C7D0E0;max-width:700px;margin:0 0 24px}
+  .hero .links{display:flex;gap:10px;flex-wrap:wrap}
+  .hero .links a{font-size:13.5px;font-weight:600;color:#dbe2ef;border:1px solid var(--line);background:rgba(255,255,255,.02);padding:10px 16px;border-radius:10px}
+  .hero .links a.primary{background:linear-gradient(90deg,var(--indigo),var(--cyan));color:#fff;border:none}
+  .hero .links a:hover{border-color:var(--cyan);text-decoration:none}
+
+  .strip{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 8px}
+  .strip .tile{flex:1;min-width:180px;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .strip .tile b{display:block;font-size:15px;color:#fff;margin-bottom:2px}
+  .strip .tile span{font-size:13px;color:var(--muted)}
+
+  section{padding:34px 0}
+  h2.sec{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:0 0 22px;display:flex;align-items:center;gap:12px}
+  h2.sec::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .grid{display:grid;grid-template-columns:1fr;gap:18px}
+  .card{display:block;background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:16px;padding:24px;transition:.18s}
+  .card:hover{text-decoration:none;border-color:#3c5290;transform:translateY(-2px);box-shadow:0 16px 40px rgba(0,0,0,.4)}
+  .card .tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:11px}
+  .card .tag{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--cyan);background:rgba(31,200,218,.10);border:1px solid rgba(31,200,218,.25);padding:3px 9px;border-radius:20px}
+  .card .tag.alt{color:#b9c4ff;background:rgba(58,77,224,.12);border-color:rgba(58,77,224,.3)}
+  .card h3{font-size:20px;color:#fff;margin:0 0 4px;line-height:1.25;font-weight:700}
+  .card .myrole{font-size:13px;color:var(--signal);font-weight:600;margin-bottom:12px}
+  .card ul{margin:0 0 14px;padding-left:18px;color:#C2CCDC;font-size:14.5px} .card ul li{margin-bottom:5px}
+  .card .go{font-size:14px;font-weight:700;color:var(--cyan)}
+
+  .twocol{display:grid;grid-template-columns:1.1fr .9fr;gap:30px}
+  @media(max-width:640px){.twocol{grid-template-columns:1fr;gap:20px}}
+  .about p{font-size:16.5px;color:#C9D2E2;margin:0 0 13px}
+  .panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:14px;padding:20px 22px}
+  .panel h3{font-size:14px;color:#fff;margin:0 0 10px;letter-spacing:.02em}
+  .panel .item{font-size:14.5px;color:#C2CCDC;margin-bottom:10px}
+  .panel .item b{color:#fff;font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chips span{font-size:13px;color:#cdd6e6;background:rgba(255,255,255,.04);border:1px solid var(--line);padding:6px 11px;border-radius:20px}
+
+  footer{padding:36px 0 60px;border-top:1px solid var(--line);margin-top:20px;color:var(--muted);font-size:13.5px}
+  footer a{color:var(--muted)} footer a:hover{color:#fff}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="row">
+    <span class="brand">
+      <svg width="30" height="20" viewBox="0 0 256 150" aria-hidden="true">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3A4DE0"/><stop offset=".55" stop-color="#2D7FF0"/><stop offset="1" stop-color="#1FC8DA"/></linearGradient></defs>
+        <path d="M16 84 H86 L98 98 L112 28 L126 116 L138 84 H156 C166 84 170 56 184 56 C198 56 202 84 212 84 H240" fill="none" stroke="url(#lg)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="112" cy="28" r="11" fill="#FF7A4D"/>
+      </svg>
+      Mohammed Bilal
+    </span>
+    <div class="nlinks">
+      <a class="opt" href="#projects">Projects</a>
+      <a class="opt" href="#about">About</a>
+      <a href="https://github.com/mohdbilal10" target="_blank" rel="noopener">GitHub</a>
+      <a class="cta" href="https://www.linkedin.com/in/mohammedbilal11" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hi">Hi, I'm</div>
+    <h1>Mohammed Bilal</h1>
+    <div class="role">AI/ML Engineer · Healthcare AI · Biotechnology</div>
+    <p>I build deployable diagnostic tools for settings where they don't exist — turning low-cost signals like a phone photo of an ECG or a simple questionnaire into clinical decision-support that stands in for expensive tests. A biotechnology graduate who taught himself to build and ship machine-learning systems, focused on accessible healthcare and AgriTech for rural India.</p>
+    <div class="links">
+      <a class="primary" href="#projects">View projects ↓</a>
+      <a href="mailto:mohammedbilalmk.a@gmail.com">Email</a>
+      <a href="https://www.linkedin.com/in/mohammedbilal11" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/mohdbilal10" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://huggingface.co/mohdbilal10" target="_blank" rel="noopener">Hugging Face</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="strip">
+    <div class="tile"><b>3 research projects</b><span>Cardiac AI · graph ML · LLMs</span></div>
+    <div class="tile"><b>Live deployment</b><span>Multilingual WhatsApp screening tool</span></div>
+    <div class="tile"><b>Presented &amp; published</b><span>Nat. Conf. on AI for Doctors · IEEE Access (submitted)</span></div>
+  </div>
+
+  <section id="projects">
+    <h2 class="sec">Research &amp; Projects</h2>
+    <div class="grid">
+
+      <a class="card" href="ecg_project_page.html" target="_blank" rel="noopener">
+        <div class="tags"><span class="tag">Deep Learning</span><span class="tag alt">n = 500</span><span class="tag alt">Deployed</span></div>
+        <h3>Screening for Left-Ventricular Dysfunction from Photographed 12-Lead ECGs</h3>
+        <div class="myrole">My role · Built and trained the model + the WhatsApp deployment</div>
+        <ul>
+          <li>Multi-task EfficientNet-B3 ensemble predicting ejection fraction and wall-motion abnormality from a photo of a 12-lead ECG.</li>
+          <li>Three-stage transfer learning, inverse-density loss weighting, out-of-fold cross-validation; severe-EF AUROC 0.76.</li>
+          <li>Diagnosed and fixed shortcut-learning and regression-to-the-mean via Grad-CAM. Deployed as a multilingual WhatsApp triage tool.</li>
+        </ul>
+        <span class="go">Open full report ↗</span>
+      </a>
+
+      <a class="card" href="ecg_llm_project_page.html" target="_blank" rel="noopener">
+        <div class="tags"><span class="tag">Large Language Models</span><span class="tag alt">n = 311</span></div>
+        <h3>ECG is All You Need — Cross-Modal Cardiac Inference with LLMs</h3>
+        <div class="myrole">My role · Co-author</div>
+        <ul>
+          <li>First demonstration that LLMs can infer echocardiographic findings from a 12-lead ECG image alone — zero-shot, no fine-tuning.</li>
+          <li>Retrospective comparison of three LLMs against the cardiologist gold standard on 311 paired ECG–echo cases.</li>
+          <li>Best model reached r = 0.394 for EF with 64% of estimates within ±5%; proof-of-concept for ECG-based cardiac triage.</li>
+        </ul>
+        <span class="go">Open full report ↗</span>
+      </a>
+
+      <a class="card" href="cvd_project_page.html" target="_blank" rel="noopener">
+        <div class="tags"><span class="tag">Graph Neural Network</span><span class="tag alt">IEEE Access · submitted</span></div>
+        <h3>AI-Driven Clinical–Lifestyle Network Model for Early CVD Prediction</h3>
+        <div class="myrole">My role · Lead developer &amp; first author</div>
+        <ul>
+          <li>Hybrid Graph Attention Network + soft-voting ensemble predicting cardiovascular risk from questionnaire-only data — no labs or imaging.</li>
+          <li>Bipartite patient–risk-factor graph with a 4-head GAT learning non-linear risk-factor interactions, fused with tabular features.</li>
+          <li>Cross-validated AUROC 0.735 with 91.8% sensitivity at a clinical screening threshold; SHAP + attention interpretability.</li>
+        </ul>
+        <span class="go">Open full report ↗</span>
+      </a>
+
+    </div>
+  </section>
+
+  <section id="about">
+    <h2 class="sec">About</h2>
+    <div class="twocol">
+      <div class="about">
+        <p>I came to AI from biology. A biotechnology degree gave me the clinical grounding; I taught myself the machine learning, and I've spent the last year turning that combination into things people can actually use.</p>
+        <p>My focus is <b>cross-modal medical inference and frugal AI</b> — extracting clinical signal from cheap, ubiquitous inputs to replace expensive diagnostics where they aren't available. I care about the unglamorous engineering: cleaning messy real-world data, catching models that "cheat," staying honest about limitations, and getting a model off the screen and onto a health worker's phone.</p>
+        <p>The long-term goal is a translation layer between biological systems and computational tools — built for, and validated in, the rural Indian settings that mainstream healthcare AI tends to skip.</p>
+      </div>
+      <div>
+        <div class="panel" style="margin-bottom:16px">
+          <h3>Education</h3>
+          <div class="item"><b>Biotechnology</b><br>RV College of Engineering, Bengaluru</div>
+        </div>
+        <div class="panel">
+          <h3>Recognition</h3>
+          <div class="item">Presented at the <b>National Conference on AI for Doctors</b>, Solapur (2026)</div>
+          <div class="item">CVD network model — manuscript <b>submitted to IEEE Access</b></div>
+          <div class="item">Co-author, LLM cardiac-inference study (Doctors AI Global Summit)</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:24px">
+      <div class="panel">
+        <h3>Technical skills</h3>
+        <div class="chips">
+          <span>Python</span><span>PyTorch</span><span>Computer Vision</span><span>Transfer Learning</span>
+          <span>Graph Neural Networks</span><span>LLMs &amp; Prompt Engineering</span><span>Explainable AI · Grad-CAM · SHAP</span>
+          <span>FastAPI</span><span>Hugging Face</span><span>Model Deployment</span><span>Data Preprocessing</span><span>Bioinformatics</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div style="margin-bottom:8px">Open to AI/ML Engineer and AI Developer roles — building real, deployable tools.</div>
+    © 2026 Mohammed Bilal ·
+    <a href="mailto:mohammedbilalmk.a@gmail.com">mohammedbilalmk.a@gmail.com</a> ·
+    <a href="https://github.com/mohdbilal10" target="_blank" rel="noopener">GitHub</a> ·
+    <a href="https://www.linkedin.com/in/mohammedbilal11" target="_blank" rel="noopener">LinkedIn</a>
+  </footer>
+
+</main>
+</body>
+</html>
