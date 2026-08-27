@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Screening for left-ventricular dysfunction from photographed 12-lead ECGs — Mohammed Bilal</title>
-<meta name="description" content="A deep-learning feasibility study screening for ejection fraction and regional wall-motion abnormality from a photograph of a 12-lead ECG. EfficientNet-B3 multi-task ensemble, n=500, three-stage transfer learning, out-of-fold cross-validation. Built and deployed by Mohammed Bilal, Bangalore AI Labs.">
+<meta name="description" content="A deep-learning feasibility study screening for ejection fraction and regional wall-motion abnormality from a photograph of a 12-lead ECG. Built and deployed by Mohammed Bilal, Bangalore AI Labs.">
 <style>
   :root{
     --ink:#0B1220; --indigo:#2D4DE0; --blue:#2D7FF0; --cyan:#1FC8DA; --signal:#FF7A4D;
@@ -24,9 +24,6 @@
   nav .brand{display:flex;align-items:center;gap:9px;font-family:var(--sans);font-weight:700;color:var(--ink);font-size:15px}
   nav .links{margin-left:auto;display:flex;gap:18px;align-items:center;font-family:var(--sans);font-size:13.5px}
   nav .links a.sec{color:var(--slate)}
-  nav .btn{font-family:var(--sans);font-size:13px;font-weight:600;padding:7px 13px;border-radius:8px;border:1px solid var(--indigo);color:var(--indigo)}
-  nav .btn.solid{background:var(--indigo);color:#fff;border-color:var(--indigo)}
-  nav .btn:hover{text-decoration:none;opacity:.9}
   @media(max-width:680px){nav .links a.sec{display:none}}
 
   header.hero{background:linear-gradient(160deg,#0B1220 0%,#15214a 100%);color:#fff;padding:54px 0 46px}
@@ -36,11 +33,6 @@
   header.hero .authors{font-family:var(--sans);font-size:14px;color:#AEB8CC;line-height:1.7}
   header.hero .authors b{color:#fff}
   header.hero .meta{font-family:var(--sans);font-size:13px;color:#8A94A6;margin-top:8px}
-  header.hero .cta{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap}
-  header.hero .cta a{font-family:var(--sans);font-weight:600;font-size:14px;padding:10px 18px;border-radius:9px}
-  header.hero .cta .p{background:linear-gradient(90deg,var(--indigo),var(--cyan));color:#fff}
-  header.hero .cta .s{border:1px solid #3a4660;color:#dbe2ef}
-  header.hero .cta a:hover{text-decoration:none;opacity:.92}
 
   main{padding:10px 0 40px}
   section{padding:26px 0;border-bottom:1px solid var(--line)}
@@ -64,6 +56,7 @@
   figcaption b{color:#10204A}
 
   .honest{background:#FFF8F4;border-left:3px solid var(--signal);border-radius:0 8px 8px 0;padding:13px 16px;margin:16px 0;font-size:15.5px}
+  .update{background:#F0FBF7;border-left:3px solid #0A6A58;border-radius:0 8px 8px 0;padding:13px 16px;margin:16px 0;font-size:15.5px}
   .role{background:#F2F5FD;border:1px solid #DCE3F6;border-left:3px solid var(--indigo);border-radius:0 10px 10px 0;padding:16px 18px;margin:6px 0}
   .role h2{margin-top:0}
   ul{padding-left:20px;margin:0 0 13px}
@@ -92,8 +85,6 @@
       <a class="sec" href="#methods">Methods</a>
       <a class="sec" href="#results">Results</a>
       <a class="sec" href="#deployment">Deployment</a>
-      <a class="btn" href="https://github.com/mohdbilal10" target="_blank" rel="noopener">GitHub</a>
-      <a class="btn solid" href="https://huggingface.co/spaces/mobilal/ecg-echo-screening" target="_blank" rel="noopener">Live Demo</a>
     </div>
   </div>
 </nav>
@@ -107,10 +98,6 @@
       Azhar Tadas Wahab, Mahaboob Pasha, <b>Mohammed Bilal</b>, Anirudh Gangadharan, Mohammed Zaid Habibulla, Syed Aasim Hubaira
       <div class="meta">Bangalore AI Labs (Unit of Beta Superintelligence Labs, LLP), Bangalore, India · National Conference on AI for Doctors, Solapur · 2026</div>
     </div>
-    <div class="cta">
-      <a class="p" href="https://huggingface.co/spaces/mobilal/ecg-echo-screening" target="_blank" rel="noopener">▶ Try the live demo</a>
-      <a class="s" href="https://github.com/mohdbilal10" target="_blank" rel="noopener">View code on GitHub</a>
-    </div>
   </div>
 </header>
 
@@ -119,7 +106,8 @@
   <section id="abstract">
     <h2>Abstract</h2>
     <p class="lead">Echocardiography is the reference standard for assessing how well the heart pumps, but it needs an ultrasound machine and a trained operator — both scarce outside large hospitals. A 12-lead ECG and a phone are almost everywhere. We asked whether a single <em>photograph</em> of a printed 12-lead ECG carries enough recoverable signal to screen for two echocardiographic findings: left-ventricular ejection fraction (EF), modelled as regression, and regional wall-motion abnormality (RWMA), modelled as a binary screen.</p>
-    <p>A multi-task EfficientNet-B3 ensemble was trained on 500 paired ECG–echo records using three-stage transfer learning, inverse-density loss weighting, and 5-fold stratified cross-validation with out-of-fold evaluation. On held-out folds the model reached a Pearson <em>r</em> of 0.37 and a mean absolute error of 9.0 EF points, with an AUROC of 0.76 for detecting severely reduced EF and 0.70 for the RWMA screen; the strongest folds reached 0.83–0.86. Gradient-based attention maps confirmed the trained model reads ECG waveforms rather than paper artefacts. We frame the system as a screening and triage aid — not a diagnostic replacement — and report the honest, data-limited ceiling of a single-centre cohort.</p>
+    <p>A multi-task deep-learning ensemble was trained on 500 paired ECG–echo records using staged transfer learning, imbalance-aware loss weighting, and 5-fold stratified cross-validation with out-of-fold evaluation. On held-out folds the model reached a Pearson <em>r</em> of 0.37 and a mean absolute error of 9.0 EF points, with an AUROC of 0.76 for detecting severely reduced EF and 0.70 for the RWMA screen; the strongest folds reached 0.83–0.86. Gradient-based attention maps confirmed the trained model reads ECG waveforms rather than paper artefacts. We frame the system as a screening and triage aid — not a diagnostic replacement — and report the honest, data-limited ceiling of a single-centre cohort.</p>
+    <div class="update"><strong>Update, August 2026.</strong> A subsequent v3.4 model, trained on an expanded cohort of 596 paired records deliberately enriched for abnormal findings, improved severe-EF detection to AUROC 0.788 — now measured on 46 severely reduced cases rather than 8 — with screening sensitivity of 0.611 at specificity 0.720. That model is the one deployed in the live WhatsApp pilot. The figures below describe the original conference study.</div>
   </section>
 
   <section>
@@ -127,7 +115,7 @@
       <h2>My role on this project</h2>
       <p>I built and trained the model end to end, and developed the deployment that turns it into a usable tool:</p>
       <ul>
-        <li><strong>Modelling.</strong> Designed and trained the multi-task EfficientNet-B3 ensemble — the preprocessing pipeline, the loss design (inverse-density weighting for EF, class-weighted cross-entropy for RWMA), the three-stage transfer-learning recipe, and the cross-validated ensemble.</li>
+        <li><strong>Modelling.</strong> Designed and trained the multi-task ensemble — the preprocessing pipeline, the imbalance-aware loss design, the staged transfer-learning recipe, and the cross-validated ensemble.</li>
         <li><strong>Diagnostics.</strong> Identified and fixed the two failure modes below (shortcut learning, regression-to-the-mean) using Grad-CAM and prediction-distribution analysis.</li>
         <li><strong>Deployment.</strong> Built the end-to-end WhatsApp pipeline (inference service plus a relay architecture) with explainable heatmaps and multilingual output, and demoed it live to cardiologists in Solapur.</li>
       </ul>
@@ -144,7 +132,7 @@
   <section id="dataset">
     <h2>Dataset</h2>
     <p><strong>Cohort.</strong> 500 patients from a single tertiary cardiology centre (April 2025–April 2026), each contributing one photographed 12-lead ECG paired with echocardiography-derived labels. EF ranged 20–67% (mean 54, SD 10.9). The cohort is dominated by near-normal cases — the imbalance that drives most later design choices.</p>
-    <p><strong>Label extraction.</strong> The targets live inside free-text echo reports ("LVEF 35%, hypokinetic infero-lateral wall…"). Plain OCR returns characters but not structured fields, so a vision-language model (Qwen2-VL<a href="#r2">²</a>) read each report and emitted EF as a number, RWMA as present/absent, and PAH severity — normalising the synonyms and varied layouts that break brittle regex rules. Where a report gave an EF range, we took the midpoint. The extracted table was treated as a draft and spot-corrected; residual label noise is one reason the ceiling is data-limited rather than model-limited.</p>
+    <p><strong>Label extraction.</strong> The targets live inside free-text echo reports ("LVEF 35%, hypokinetic infero-lateral wall…"). Plain OCR returns characters but not structured fields, so a vision-language model<a href="#r2">²</a> read each report and emitted EF as a number, RWMA as present/absent, and PAH severity — normalising the synonyms and varied layouts that break brittle regex rules. Where a report gave an EF range, we took the midpoint. The extracted table was treated as a draft and spot-corrected; residual label noise is one reason the ceiling is data-limited rather than model-limited.</p>
     <table>
       <caption>Table 1. Cohort composition (n = 500).</caption>
       <tr><th>Target</th><th>Stratum</th><th class="val">n</th></tr>
@@ -159,90 +147,19 @@
 
   <section id="methods">
     <h2>Methods</h2>
+    <p>The full methodology — preprocessing pipeline, backbone and hyperparameter choices, loss design, and the staged transfer-learning recipe — is described in the study manuscript and is available to research collaborators on request. The summary below covers what a clinical reader needs to interpret the results.</p>
 
-    <h3>Image preprocessing</h3>
-    <p>Each photo passes through a fixed pipeline before the network sees it — stripping distracting artefacts, standardising lighting, and matching the exact input format the backbone was pretrained on. Identical preprocessing runs at training and inference.</p>
-    <table>
-      <caption>Table 2. Preprocessing pipeline.</caption>
-      <tr><th>Step</th><th>Setting</th><th>Rationale</th></tr>
-      <tr><td>Edge crop</td><td class="val">5% each side</td><td>Removes artefact-heavy borders — patient name, hospital logo, grid edges — the cues a model can cheat on.</td></tr>
-      <tr><td>Grayscale</td><td class="val">BGR → gray</td><td>An ECG trace is ink on paper; colour carries no diagnostic signal and varies with camera and paper.</td></tr>
-      <tr><td>CLAHE</td><td class="val">clip 2.5, 8×8</td><td>Localises contrast enhancement to roughly the grid scale; faint traces become legible without amplifying noise.</td></tr>
-      <tr><td>Sharpen</td><td class="val">3×3 kernel</td><td>The signal lives in thin lines; sharpening crisps the QRS spikes and ST segments.</td></tr>
-      <tr><td>Resize</td><td class="val">384 × 384</td><td>The native resolution of this EfficientNet-B3 checkpoint; preserves the pretrained weights and resolves thin lines.</td></tr>
-      <tr><td>Normalize</td><td class="val">ImageNet mean/std</td><td>Places pixels in the numeric range the pretrained backbone already understands.</td></tr>
-    </table>
-    <p><strong>Augmentation.</strong> Each training image is randomly perturbed every epoch — small rotation/shift/scale (a tilted, off-centre phone), brightness/contrast jitter (lighting and photocopier variation), mild blur and noise (cheap sensors), and coarse dropout (so no single region is depended on). Horizontal and vertical flips are deliberately excluded: lead order and waveform polarity carry meaning, so flipping would teach a false invariance.</p>
-
-    <h3>Architecture</h3>
-    <p>One shared image encoder produces a feature vector; a small shared neck distils it; two task-specific heads read EF and RWMA off that shared representation. This multi-task design lets the related tasks support each other, regularises a model trained on few images, and answers both questions in one forward pass.</p>
-
-    <figure>
-      <svg viewBox="0 0 860 250" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system,Segoe UI,sans-serif">
-        <defs>
-          <linearGradient id="bb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3A4DE0"/><stop offset="1" stop-color="#2D7FF0"/></linearGradient>
-          <marker id="ar" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#9AA6BC"/></marker>
-        </defs>
-        <rect x="8" y="92" width="92" height="66" rx="8" fill="#fff" stroke="#C7CFDD"/>
-        <path d="M18 130 H40 L46 138 L54 108 L62 150 L68 130 H92" fill="none" stroke="#2D7FF0" stroke-width="2.4" stroke-linejoin="round"/>
-        <text x="54" y="178" text-anchor="middle" font-size="11" fill="#5b6678">ECG photo</text>
-        <line x1="100" y1="125" x2="128" y2="125" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
-        <rect x="130" y="100" width="92" height="50" rx="8" fill="#EEF2FB" stroke="#C7CFDD"/>
-        <text x="176" y="122" text-anchor="middle" font-size="11.5" fill="#13306E" font-weight="700">Preprocess</text>
-        <text x="176" y="138" text-anchor="middle" font-size="9.5" fill="#5b6678">crop · CLAHE · 384</text>
-        <line x1="222" y1="125" x2="250" y2="125" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
-        <rect x="252" y="92" width="150" height="66" rx="9" fill="url(#bb)"/>
-        <text x="327" y="120" text-anchor="middle" font-size="13" fill="#fff" font-weight="700">EfficientNet-B3</text>
-        <text x="327" y="138" text-anchor="middle" font-size="10" fill="#dbe6ff">→ 1536 features</text>
-        <line x1="402" y1="125" x2="430" y2="125" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
-        <rect x="432" y="96" width="120" height="58" rx="8" fill="#EEF2FB" stroke="#C7CFDD"/>
-        <text x="492" y="120" text-anchor="middle" font-size="11.5" fill="#13306E" font-weight="700">Shared neck</text>
-        <text x="492" y="136" text-anchor="middle" font-size="9" fill="#5b6678">1536→512→256→128</text>
-        <line x1="552" y1="125" x2="582" y2="70" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
-        <line x1="552" y1="125" x2="582" y2="180" stroke="#9AA6BC" stroke-width="2" marker-end="url(#ar)"/>
-        <rect x="584" y="44" width="172" height="52" rx="8" fill="#fff" stroke="#2D4DE0"/>
-        <text x="670" y="66" text-anchor="middle" font-size="11.5" fill="#2D4DE0" font-weight="700">EF head (128→1)</text>
-        <text x="670" y="82" text-anchor="middle" font-size="9.5" fill="#5b6678">regression · ejection fraction</text>
-        <rect x="584" y="154" width="172" height="52" rx="8" fill="#fff" stroke="#1FA9BF"/>
-        <text x="670" y="176" text-anchor="middle" font-size="11.5" fill="#1593a8" font-weight="700">RWMA head (128→2)</text>
-        <text x="670" y="192" text-anchor="middle" font-size="9.5" fill="#5b6678">classification · wall motion</text>
-      </svg>
-      <figcaption><b>Figure 1.</b> Model architecture. A photographed ECG is preprocessed and encoded by an EfficientNet-B3 backbone into a 1536-dim feature vector; a shared neck (1536→512→256→128, LayerNorm · GELU · dropout) feeds an EF regression head and an RWMA classification head.</figcaption>
-    </figure>
-
-    <p>EfficientNet-B3<a href="#r4">⁴</a> sits at the small-data, cheap-deployment sweet spot of its family: B0 underfits the fine waveform detail, B7 would overfit 500 images and be slow on a free CPU host. At ~12.7M parameters it runs on a CPU.</p>
-    <table>
-      <caption>Table 3. Architecture hyperparameters.</caption>
-      <tr><th>Hyperparameter</th><th>Value</th><th>Reason</th></tr>
-      <tr><td>Backbone weights</td><td class="val">ns_jft_in1k</td><td>NoisyStudent checkpoint (JFT-300M → ImageNet-1k) — the strongest public B3 start.</td></tr>
-      <tr><td>Input resolution</td><td class="val">384</td><td>Native size of the checkpoint; enough pixels for thin ECG lines.</td></tr>
-      <tr><td>Global pool</td><td class="val">average</td><td>Fixed-length vector and a mild regulariser versus flattening.</td></tr>
-      <tr><td>drop_rate</td><td class="val">0.20</td><td>Dropout on backbone features; moderate regularisation for 12.7M params on 500 images.</td></tr>
-      <tr><td>drop_path</td><td class="val">0.10</td><td>Stochastic depth — randomly skips whole blocks, an ensemble-of-shallower-nets effect.</td></tr>
-      <tr><td>Neck widths</td><td class="val">1536→512→256→128</td><td>Progressive compression into a compact shared representation.</td></tr>
-      <tr><td>Normalisation</td><td class="val">LayerNorm</td><td>Batch-independent, so stable with the small batches we are forced to use.</td></tr>
-      <tr><td>Activation</td><td class="val">GELU</td><td>Smooth gradients; avoids ReLU's dead-neuron region.</td></tr>
-      <tr><td>Neck dropout</td><td class="val">0.45 / 0.315 / 0.225</td><td>Heavy early, lighter near the bottleneck; aggressive regularisation justified by the tiny dataset.</td></tr>
-      <tr><td>EF / RWMA heads</td><td class="val">128→1 / 128→2</td><td>Single linear output (EF, continuous); two logits → softmax (RWMA, present/absent).</td></tr>
-      <tr><td>Total parameters</td><td class="val">~12.7 M</td><td>Small and CPU-friendly; regularisation keeps it from memorising 500 images.</td></tr>
-    </table>
-
-    <h3>Loss functions</h3>
-    <p><strong>EF.</strong> Smooth-L1 (Huber) loss — quadratic for small errors, linear for large — is robust to the outliers and label noise from VLM extraction. It is paired with inverse-density (label-distribution-smoothing) weighting<a href="#r7">⁷</a> that up-weights rare EF values, capped at 3×. Without it, a model minimising average error simply predicts ~54 for everyone and ignores the rare, clinically vital low-EF cases. The cap was tuned: 6× over-corrected into noisy predictions, 3× balanced.</p>
-    <p><strong>RWMA.</strong> Class-weighted cross-entropy up-weights the abnormal class, because in screening a missed sick patient is worse than a false alarm. EF targets are scaled by 1/100 during training for stability and rescaled at inference.</p>
-
-    <h3>Three-stage transfer learning</h3>
-    <p>With 500 labelled images you cannot teach a network how to <em>see</em> from scratch, so knowledge is inherited in three stages. <strong>(1)</strong> NoisyStudent pretraining<a href="#r5">⁵</a> on JFT-300M and ImageNet supplies general vision. <strong>(2)</strong> Re-pretraining on PTB-XL — 21,430 public 12-lead ECGs<a href="#r6">⁶</a> — moves the backbone's attention onto waveform morphology (AUROC 0.88–0.90 on ECG diagnoses); this is also half of the shortcut-learning fix. <strong>(3)</strong> The 500 paired records fine-tune the heads and, gently, the backbone. The 500 only have to teach the final mapping, not how to read an image.</p>
-
-    <h3>Optimisation &amp; evaluation</h3>
-    <p>Training used AdamW<a href="#r8">⁸</a> with a differential learning rate — small for the already-expert backbone (1e-4), larger for the freshly initialised heads (1e-3) — guarding the pretrained weights against catastrophic forgetting. A OneCycleLR schedule<a href="#r9">⁹</a> warms up then anneals in a single cycle; mixed precision kept the ensemble within free GPU limits. Performance was measured with 5-fold stratified cross-validation; every reported number is an <strong>out-of-fold</strong> prediction — made by the one fold-model that never trained on that patient — so results are not tested on training data. At deployment the five fold-models are averaged and test-time augmentation averages predictions over mild input shifts.</p>
+    <h3>Approach in brief</h3>
+    <p>One shared image encoder produces a feature representation; two task-specific heads read EF and RWMA off that shared representation. This multi-task design lets the related tasks support each other, regularises a model trained on few images, and answers both questions in one forward pass. The encoder is a compact, CPU-deployable convolutional network initialised from strong public pretraining, then re-pretrained on PTB-XL — 21,430 public 12-lead ECGs<a href="#r6">⁶</a> — so its attention moves onto waveform morphology before it ever sees the study data. The paired records then fine-tune the heads and, gently, the encoder: the 500 cases only have to teach the final mapping, not how to read an image.</p>
+    <p>Losses are imbalance-aware in both tasks — up-weighting rare low-EF values so the model cannot succeed by predicting "average" for everyone, and up-weighting the abnormal RWMA class because in screening a missed sick patient is worse than a false alarm. Augmentation simulates real field conditions (tilted phones, poor lighting, cheap sensors) while deliberately excluding flips, since lead order and waveform polarity carry meaning.</p>
+    <p>Performance was measured with 5-fold stratified cross-validation; every reported number is an <strong>out-of-fold</strong> prediction — made by the one fold-model that never trained on that patient — so results are not tested on training data. At deployment the five fold-models are averaged and test-time augmentation averages predictions over mild input shifts.</p>
   </section>
 
   <section id="failures">
     <h2>Two failure modes, diagnosed and fixed</h2>
     <p>Rigorous validation caught two ways the model could look good while being wrong. Both fixes began with a diagnostic, not a guess.</p>
-    <p><strong>Shortcut learning.</strong> An early model scored well, but Grad-CAM<a href="#r11">¹¹</a> showed its attention on paper texture, borders and printed text rather than the waveforms — a known failure mode of deep networks.<a href="#r10">¹⁰</a> The fix was PTB-XL waveform pretraining plus the 5% edge-crop. Attention moved onto the traces, and severe-EF detection AUROC rose from 0.66 to 0.76.</p>
-    <p><strong>Regression to the mean.</strong> Because most patients sit near average EF, the model minimised error by predicting ~54% for everyone — fine on average, useless precisely where it matters. We caught it by plotting the prediction distribution and watching it collapse to a spike at 54. Inverse-density loss weighting restored a prediction spread of ~9, matching the true range, so severe cases are committed to rather than averaged away.</p>
+    <p><strong>Shortcut learning.</strong> An early model scored well, but Grad-CAM<a href="#r11">¹¹</a> showed its attention on paper texture, borders and printed text rather than the waveforms — a known failure mode of deep networks.<a href="#r10">¹⁰</a> The fix was ECG-waveform pretraining plus border cropping. Attention moved onto the traces, and severe-EF detection AUROC rose from 0.66 to 0.76.</p>
+    <p><strong>Regression to the mean.</strong> Because most patients sit near average EF, the model minimised error by predicting ~54% for everyone — fine on average, useless precisely where it matters. We caught it by plotting the prediction distribution and watching it collapse to a spike at 54. Imbalance-aware loss weighting restored a prediction spread of ~9, matching the true range, so severe cases are committed to rather than averaged away.</p>
   </section>
 
   <section id="results">
@@ -297,7 +214,7 @@
     <h3>Where the model looks</h3>
     <figure>
       <img src="fig_gradcam.png" alt="Two ECG photographs overlaid with attention heatmaps for EF and RWMA, hottest regions on the rhythm strip and lead complexes">
-      <figcaption><b>Figure 5.</b> Attention maps. LayerCAM<a href="#r12">¹²</a> for EF (a global property, combined across the last two blocks) and Grad-CAM for RWMA (more regional, last block). After PTB-XL pretraining the strongest attention falls on the ECG waveforms rather than the paper grid — a marked change from the earlier shortcut-learning behaviour.</figcaption>
+      <figcaption><b>Figure 5.</b> Attention maps. LayerCAM<a href="#r12">¹²</a> for EF (a global property, combined across the last two blocks) and Grad-CAM for RWMA (more regional, last block). After ECG-waveform pretraining the strongest attention falls on the ECG waveforms rather than the paper grid — a marked change from the earlier shortcut-learning behaviour.</figcaption>
     </figure>
   </section>
 
@@ -317,8 +234,8 @@
 
   <section id="deployment">
     <h2>Deployment</h2>
-    <p><strong>Demo.</strong> A Streamlit app on a Hugging Face Space takes an ECG photo and returns EF, RWMA, confidence, a referral recommendation and a Grad-CAM overlay. <a href="https://huggingface.co/spaces/mobilal/ecg-echo-screening" target="_blank" rel="noopener">Try the live demo →</a></p>
-    <p><strong>Field path.</strong> The real deployment is a WhatsApp bot — a health worker sends an ECG photo and gets the screening back, with no app to install, in English, Kannada or Hindi. The infrastructure lesson was a <em>relay architecture</em>: the host with enough free memory for the 5-model ensemble cannot reach Meta's servers, so a tiny relay on a reachable host fronts it — receiving the webhook, calling the model's inference endpoint, and sending the reply. Webhooks are acknowledged within the required five seconds while inference runs as a background task — the fix for repeated timeout failures.</p>
+    <p><strong>Field path.</strong> The deployment is a WhatsApp bot — a health worker sends an ECG photo and gets the screening back, with no app to install, in English, Kannada or Hindi. The infrastructure lesson was a <em>relay architecture</em>: the host with enough free memory for the 5-model ensemble cannot reach Meta's servers, so a tiny relay on a reachable host fronts it — receiving the webhook, calling the model's inference endpoint, and sending the reply. Webhooks are acknowledged within the required five seconds while inference runs as a background task — the fix for repeated timeout failures.</p>
+    <p><strong>Access.</strong> The pilot is running with clinicians onboarded individually under a supervising physician. Demonstrations are available on request.</p>
     <figure>
       <video controls style="max-width:100%;border-radius:10px;border:1px solid var(--line)" poster="fig_gradcam.png">
         <source src="demo.mp4" type="video/mp4">
@@ -367,7 +284,6 @@
     <div class="disc">Developed at Bangalore AI Labs. This is a research feasibility tool, not a medical device: it has no regulatory clearance, is validated on a single-centre cohort, and the final decision always rests with the clinician.</div>
     © 2026 Mohammed Bilal et al. ·
     <a href="mailto:mdbilalmk.a@gmail.com">mdbilalmk.a@gmail.com</a> ·
-    <a href="https://github.com/mohdbilal10" target="_blank" rel="noopener">GitHub</a> ·
     <a href="https://www.linkedin.com/in/mohammedbilal11" target="_blank" rel="noopener">LinkedIn</a>
   </footer>
 
